@@ -53,16 +53,40 @@ $${arbora_DEFINES} \
 # arbora_exe HEADERS
 #
 arbora_exe_HEADERS += \
+$${NADIR_SRC}/xos/base/event.hpp \
+$${NADIR_SRC}/xos/io/crt/file.hpp \
+$${NADIR_SRC}/xos/console/output_stream.hpp \
+$${ARCHA_SRC}/xos/fs/entry.hpp \
+$${ARCHA_SRC}/xos/fs/directory/entry.hpp \
+$${ARBORA_SRC}/xos/base/std/tree/node.hpp \
+$${ARBORA_SRC}/xos/base/std/tree/leaf.hpp \
 $${ARBORA_SRC}/xos/base/std/tree/branch.hpp \
 $${ARBORA_SRC}/xos/base/std/tree/search.hpp \
+$${ARBORA_SRC}/xos/fs/tree/node.hpp \
+$${ARBORA_SRC}/xos/fs/tree/leaf.hpp \
+$${ARBORA_SRC}/xos/fs/tree/branch.hpp \
+$${ARBORA_SRC}/xos/fs/tree/searcher_events.hpp \
+$${ARBORA_SRC}/xos/fs/tree/searcher.hpp \
+$${ARBORA_SRC}/xos/fs/tree/reader_events.hpp \
+$${ARBORA_SRC}/xos/fs/tree/reader.hpp \
 $${ARBORA_SRC}/xos/app/console/arbora/main.hpp \
 $${FILA_SRC}/xos/console/main_main.hpp \
 
 # arbora_exe SOURCES
 #
 arbora_exe_SOURCES += \
-$${ARBORA_SRC}/xos/base/std/tree/branch.cpp \
+$${NADIR_SRC}/xos/base/event.cpp \
+$${NADIR_SRC}/xos/io/crt/file.cpp \
+$${NADIR_SRC}/xos/console/output_stream.hpp \
+$${ARCHA_SRC}/xos/fs/directory/entry.cpp \
 $${ARBORA_SRC}/xos/base/std/tree/search.cpp \
+$${ARBORA_SRC}/xos/fs/tree/node.cpp \
+$${ARBORA_SRC}/xos/fs/tree/leaf.cpp \
+$${ARBORA_SRC}/xos/fs/tree/branch.cpp \
+$${ARBORA_SRC}/xos/fs/tree/searcher_events.cpp \
+$${ARBORA_SRC}/xos/fs/tree/searcher.cpp \
+$${ARBORA_SRC}/xos/fs/tree/reader_events.cpp \
+$${ARBORA_SRC}/xos/fs/tree/reader.cpp \
 $${ARBORA_SRC}/xos/app/console/arbora/main.cpp \
 $${FILA_SRC}/xos/console/main_main.cpp \
 
@@ -76,5 +100,3 @@ $${arbora_FRAMEWORKS} \
 #
 arbora_exe_LIBS += \
 $${arbora_LIBS} \
-
-
