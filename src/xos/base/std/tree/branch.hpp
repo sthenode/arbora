@@ -21,73 +21,158 @@
 #ifndef _XOS_BASE_STD_TREE_BRANCH_HPP
 #define _XOS_BASE_STD_TREE_BRANCH_HPP
 
-#include "xos/base/base.hpp"
-
-#include <list>
+#include "xos/base/std/tree/leaf.hpp"
 
 namespace xos {
 namespace std {
 namespace tree {
 
 ///////////////////////////////////////////////////////////////////////
+///  Class: reverse_ranget
+///////////////////////////////////////////////////////////////////////
+template <class trange>
+class reverse_ranget {
+public:
+    reverse_ranget(trange& range): range_(range) {}
+    typename trange::reverse_iterator begin() const {
+        return range_.rbegin();
+    }
+    typename trange::reverse_iterator end() const {
+        return range_.rend();
+    }
+protected:
+    trange& range_;
+};
+
+///////////////////////////////////////////////////////////////////////
 ///  Class: branchest
 ///////////////////////////////////////////////////////////////////////
-template <class branch, class extends = ::std::list<branch*> >
+template <class tbranch, class extends = ::std::list<tbranch*> >
 class branchest: public extends {
 public:
+    typedef tbranch branch_t;
+    typedef reverse_ranget<branchest> reverse_range;
+
     branchest() {}
     virtual ~branchest() {}
-    virtual branch* push_branch(branch* first) {
+
+    virtual tbranch* push_branch(tbranch* first) {
         if (first) { this->push_front(first); }
         return first;
     }
-    virtual branch* pop_branch() {
-        branch* first = 0;
+    virtual tbranch* pop_branch() {
+        tbranch* first = 0;
         if (!(this->empty())) {
             first = this->front();
             this->pop_front();
         }
         return first;
     }
-    virtual branch* queue_branch(branch* last) {
+    virtual tbranch* first_branch() const {
+        tbranch* first = 0;
+        if (!(this->empty())) {
+            first = this->front();
+        }
+        return first;
+    }
+    virtual tbranch* last_branch() const {
+        tbranch* last = 0;
+        if (!(this->empty())) {
+            last = this->back();
+        }
+        return last;
+    }
+    virtual tbranch* queue_branch(tbranch* last) {
         if (last) { this->push_back(last); }
         return last;
     }
-    virtual branch* pull_branch() {
-        branch* last = 0;
+    virtual tbranch* pull_branch() {
+        tbranch* last = 0;
         if (!(this->empty())) {
             last = this->back();
             this->pop_back();
         }
         return last;
     }
+
+    virtual void delete_all() {
+        for (auto b: *this) {
+            if (b) {
+                delete b;
+                b = 0;
+            }
+        }
+        this->clear();
+    }
+
+    static reverse_range reverse_iterate(branchest& branches) {
+        return reverse_range(branches);
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////
 ///  Class: brancht
 ///////////////////////////////////////////////////////////////////////
-template <class branch, class tbranches, class extends>
+template <class tbranch, class tbranches, class tleaves, class extends>
 class brancht: public extends {
 public:
-    brancht() {}
+    typedef typename tleaves::leaf_t tleaf;
+    typedef tbranch branch_t;
+    typedef tleaves leaves_t;
+    typedef typename leaves_t::leaf_t leaf_t;
+
+    brancht(): branch_(0) {}
     virtual ~brancht() {}
-    virtual branch* push_branch(branch* first) {
+
+    virtual tbranch* push_branch(tbranch* first) {
         return branches_.push_branch(first);
     }
-    virtual branch* pop_branch() {
+    virtual tbranch* pop_branch() {
         return branches_.pop_branch();
     }
-    virtual branch* queue_branch(branch* last) {
+    virtual tbranch* queue_branch(tbranch* last) {
         return branches_.queue_branch(last);
     }
-    virtual branch* pull_branch() {
+    virtual tbranch* pull_branch() {
         return branches_.pull_branch();
+    }
+    virtual tbranch* first_branch() const {
+        return branches_.first_branch();
+    }
+    virtual tbranch* last_branch() const {
+        return branches_.last_branch();
+    }
+    virtual tbranch* set_branch(tbranch* to) {
+        branch_ = to;
+        return branch_;
+    }
+    virtual tbranch* branch() const {
+        return (tbranch*)branch_;
     }
     virtual tbranches& branches() const {
         return (tbranches&)branches_;
     }
+
+    virtual tleaf* push_leaf(tleaf* first) {
+        return leaves_.push_leaf(first);
+    }
+    virtual tleaf* pop_leaf() {
+        return leaves_.pop_leaf();
+    }
+    virtual tleaf* queue_leaf(tleaf* last) {
+        return leaves_.queue_leaf(last);
+    }
+    virtual tleaf* pull_leaf() {
+        return leaves_.pull_leaf();
+    }
+    virtual tleaves& leaves() const {
+        return (tleaves&)leaves_;
+    }
+
 protected:
+    tbranch* branch_;
     tbranches branches_;
+    tleaves leaves_;
 };
 
 } /// namespace tree

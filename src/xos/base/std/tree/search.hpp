@@ -33,11 +33,15 @@ namespace tree {
 template <class branch, class extends, class find>
 class findt: public extends {
 public:
+    typedef typename branch::leaf_t leaf;
     findt(find& _find, branch& b): find_(_find) { 
         this->search(&b); 
     }
     virtual branch* found(branch* b) {
         return find_.found(b);
+    }
+    virtual leaf* found(leaf* l) {
+        return find_.found(l);
     }
 protected:
     find& find_;
@@ -49,17 +53,19 @@ protected:
 template <class branch>
 class searcht {
 public:
+    typedef typename branch::leaf_t leaf;
     searcht() {}
     virtual ~searcht() {}
     virtual void search(branch* b) {}
     virtual branch* found(branch* b) { return 0; }
+    virtual leaf* found(leaf* l) { return 0; }
 };
 
 ///////////////////////////////////////////////////////////////////////
 ///  Class: breadth_first_searcht
 ///////////////////////////////////////////////////////////////////////
-template <class branch, class branches, class extends = searcht<branch> >
-class breadth_first_searcht: public brancht<branch, branches, extends> {
+template <class branch, class branches, class leaves, class extends = searcht<branch> >
+class breadth_first_searcht: public brancht<branch, branches, leaves, extends> {
 public:
     breadth_first_searcht() {}
     breadth_first_searcht(branch* v) { this->search(v); }
@@ -78,8 +84,8 @@ public:
 ///////////////////////////////////////////////////////////////////////
 ///  Class: depth_first_searcht
 ///////////////////////////////////////////////////////////////////////
-template <class branch, class branches, class extends = searcht<branch> >
-class depth_first_searcht: public brancht<branch, branches, extends> {
+template <class branch, class branches, class leaves, class extends = searcht<branch> >
+class depth_first_searcht: public brancht<branch, branches, leaves, extends> {
 public:
     depth_first_searcht() {}
     depth_first_searcht(branch* v) { this->search(v); }
@@ -87,7 +93,7 @@ public:
         if (v) {
             do {
                 if (this->found(v)) { break; }
-                for (auto b: v->branches()) {
+                for (auto b: branches::reverse_iterate(v->branches())) {
                     this->push_branch(b);
                 }
             } while ((v = this->pop_branch()));
@@ -98,8 +104,8 @@ public:
 ///////////////////////////////////////////////////////////////////////
 ///  Class: depend_first_searcht
 ///////////////////////////////////////////////////////////////////////
-template <class branch, class branches>
-class depend_first_searcht: public brancht<branch, branches, searcht<branch> > {
+template <class branch, class branches, class leaves, class extends = searcht<branch> >
+class depend_first_searcht: public brancht<branch, branches, leaves, extends> {
 public:
     depend_first_searcht() {}
     depend_first_searcht(branch* v) { this->search(v); }
@@ -109,6 +115,34 @@ public:
                 stack_.push_branch(v);
                 for (auto b: v->branches()) {
                     this->push_branch(b);
+                }
+            } while ((v = this->pop_branch()));
+            while ((v = stack_.pop_branch())) {
+                if (this->found(v)) { break; }
+            }
+        }
+    }
+protected:
+    branches stack_;
+};
+
+///////////////////////////////////////////////////////////////////////
+///  Class: bottom_first_searcht
+///////////////////////////////////////////////////////////////////////
+template <class branch, class branches, class leaves, class extends = searcht<branch> >
+class bottom_first_searcht: public brancht<branch, branches, leaves, extends> {
+public:
+    bottom_first_searcht() {}
+    bottom_first_searcht(branch* v) { this->search(v); }
+    virtual void search(branch* v) {
+        if (v) {
+            stack_.push_branch(v);
+            do {
+                for (auto b: v->branches()) {
+                    this->push_branch(b);
+                }
+                for (auto b: branches::reverse_iterate(v->branches())) {
+                    stack_.push_branch(b);
                 }
             } while ((v = this->pop_branch()));
             while ((v = stack_.pop_branch())) {
