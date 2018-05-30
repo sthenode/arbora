@@ -13,62 +13,62 @@
 /// or otherwise) arising in any way out of the use of this software, 
 /// even if advised of the possibility of such damage.
 ///
-///   File: reader.hpp
+///   File: writer.hpp
 ///
 /// Author: $author$
-///   Date: 5/17/2018
+///   Date: 5/30/2018
 ///////////////////////////////////////////////////////////////////////
-#ifndef _XOS_FS_TREE_READER_HPP
-#define _XOS_FS_TREE_READER_HPP
+#ifndef _XOS_FS_TREE_WRITER_HPP
+#define _XOS_FS_TREE_WRITER_HPP
 
-#include "xos/base/std/tree/read.hpp"
-#include "xos/fs/tree/reader_events.hpp"
+#include "xos/base/std/tree/write.hpp"
+#include "xos/fs/tree/searcher_events.hpp"
 #include "xos/fs/tree/branch.hpp"
 
 namespace xos {
 namespace fs {
 namespace tree {
 
-typedef reader_events readert_implements;
-typedef std::tree::depth_first_readt
-<branch, branches, leaf, node, 
- stream, reader_events, reader_events_extend> readert_extends;
+typedef searcher_events writert_implements;
+typedef std::tree::depth_first_writet
+<branch, branches, leaf, leaves, node, 
+ stream, searcher_events, searcher_events_extend> writert_extends;
 ///////////////////////////////////////////////////////////////////////
-///  Class: readert
+///  Class: writert
 ///////////////////////////////////////////////////////////////////////
-template 
-<class TImplements = readert_implements, class TExtends = readert_extends>
+template <class TImplements = writert_implements, class TExtends = writert_extends>
 
-class _EXPORT_CLASS readert: virtual public TImplements, public TExtends {
+class _EXPORT_CLASS writert: virtual public TImplements, public TExtends {
 public:
     typedef TImplements implements;
     typedef TExtends extends;
-    typedef readert derives;
 
-    typedef reader_events events;
+    typedef searcher_events events;
 
-    readert(events* forward_to) {
-        this->forward_reader_events_to(forward_to);
+    writert(branch& root, stream& to): extends(root, to) {
     }
-    readert() {
+    writert(stream& to, events* forward_to): extends(to) {
+        this->forward_searcher_events_to(forward_to);
+    }
+    writert(stream& to): extends(to) {
     }
 
 protected:
-    virtual event_handled_status on_read_node(const fs::tree::node& node) {
-        events* forwarded_to = this->reader_events_forwarded_to();
+    virtual event_handled_status on_found_node(const fs::tree::node& node) {
+        events* forwarded_to = this->searcher_events_forwarded_to();
         if ((forwarded_to)) {
             event_handled_status status = event_unhandled;
-            if ((status = forwarded_to->on_read_node(node))) {
+            if ((status = forwarded_to->on_found_node(node))) {
                 return status;
             }
         }
-        return extends::on_read_node(node);
+        return extends::on_found_node(node);
     }
 };
-typedef readert<> reader;
+typedef writert<> writer;
 
 } /// namespace tree
 } /// namespace fs
 } /// namespace xos
 
-#endif /// _XOS_FS_TREE_READER_HPP 
+#endif /// _XOS_FS_TREE_WRITER_HPP 

@@ -26,6 +26,7 @@
 #include "xos/io/crt/file.hpp"
 #include "xos/os/fs/entry.hpp"
 #include "xos/fs/tree/reader.hpp"
+#include "xos/fs/tree/writer.hpp"
 #include "xos/fs/tree/searcher.hpp"
 
 namespace xos {
@@ -74,21 +75,30 @@ protected:
             os::os::fs::entry entry;
 
             if ((entry.exists(arg))) {
-                fs::tree::searcher searcher(this);
 
                 if ((entry.is_directory())) {
+                    xos::console::output_stream to(*this);                    
+                    fs::tree::writer writer(to, this);
+                    ssize_t count = 0;
+
                     on_found_node_ = &derives::on_found_node_write;
-                    searcher.search(root_, arg);
+                    count = writer.write(root_ = arg);
                 } else {
                     io::crt::char_file file;
 
                     if ((file.open(arg))) {
                         fs::tree::reader reader(this);
                         ssize_t count = 0;
+                        
                         count = reader.read(root_, file);
                         file.close();
-                        on_found_node_ = &derives::on_found_node_output;
-                        searcher.search(root_);
+
+                        if (0 <= (count)) {
+                            fs::tree::searcher searcher(this);
+
+                            on_found_node_ = &derives::on_found_node_output;
+                            searcher.search(root_);
+                        }
                     }
                 }
             }
@@ -112,9 +122,7 @@ protected:
         return event_handled_success;
     }
     virtual event_handled_status on_found_node_write(const fs::tree::node& node) {
-        xos::console::output_stream ostream(*this);
-        node.write(ostream);
-        return event_handled_success;
+        return event_unhandled;
     }
 
     virtual event_handled_status on_read_node(const fs::tree::node& node) {
