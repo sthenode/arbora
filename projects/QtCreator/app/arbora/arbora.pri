@@ -62,6 +62,8 @@ $${ARBORA_SRC}/xos/base/std/tree/node.hpp \
 $${ARBORA_SRC}/xos/base/std/tree/leaf.hpp \
 $${ARBORA_SRC}/xos/base/std/tree/branch.hpp \
 $${ARBORA_SRC}/xos/base/std/tree/search.hpp \
+$${ARBORA_SRC}/xos/base/std/tree/read.hpp \
+$${ARBORA_SRC}/xos/base/std/tree/write.hpp \
 $${ARBORA_SRC}/xos/fs/tree/node.hpp \
 $${ARBORA_SRC}/xos/fs/tree/leaf.hpp \
 $${ARBORA_SRC}/xos/fs/tree/branch.hpp \
@@ -69,6 +71,7 @@ $${ARBORA_SRC}/xos/fs/tree/searcher_events.hpp \
 $${ARBORA_SRC}/xos/fs/tree/searcher.hpp \
 $${ARBORA_SRC}/xos/fs/tree/reader_events.hpp \
 $${ARBORA_SRC}/xos/fs/tree/reader.hpp \
+$${ARBORA_SRC}/xos/fs/tree/writer.hpp \
 $${ARBORA_SRC}/xos/app/console/arbora/main.hpp \
 $${FILA_SRC}/xos/console/main_main.hpp \
 
@@ -80,6 +83,8 @@ $${NADIR_SRC}/xos/io/crt/file.cpp \
 $${NADIR_SRC}/xos/console/output_stream.hpp \
 $${ARCHA_SRC}/xos/fs/directory/entry.cpp \
 $${ARBORA_SRC}/xos/base/std/tree/search.cpp \
+$${ARBORA_SRC}/xos/base/std/tree/read.cpp \
+$${ARBORA_SRC}/xos/base/std/tree/write.cpp \
 $${ARBORA_SRC}/xos/fs/tree/node.cpp \
 $${ARBORA_SRC}/xos/fs/tree/leaf.cpp \
 $${ARBORA_SRC}/xos/fs/tree/branch.cpp \
@@ -87,6 +92,7 @@ $${ARBORA_SRC}/xos/fs/tree/searcher_events.cpp \
 $${ARBORA_SRC}/xos/fs/tree/searcher.cpp \
 $${ARBORA_SRC}/xos/fs/tree/reader_events.cpp \
 $${ARBORA_SRC}/xos/fs/tree/reader.cpp \
+$${ARBORA_SRC}/xos/fs/tree/writer.cpp \
 $${ARBORA_SRC}/xos/app/console/arbora/main.cpp \
 $${FILA_SRC}/xos/console/main_main.cpp \
 
