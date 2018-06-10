@@ -70,22 +70,27 @@ public:
         destruct();
     }
 
+    virtual branch& clear() {
+        extends::clear();
+        got_branches_ = (true);
+        leaves().delete_all();
+        branches().delete_all();
+    }
+
     virtual branch& operator = (const char* path) {
-        destruct();
-        extends::destruct();
-        construct(path);
+        clear();
+        this->set(path, fs::entry_type_directory);
+        got_branches_ = (false);
         return *this;
     }
     virtual branch& operator = (const fs::directory::entry& entry) {
-        destruct();
-        extends::destruct();
-        construct(entry);
+        clear();
+        this->set(entry);
         return *this;
     }
     virtual branch& operator = (const branch& copy) {
-        destruct();
-        extends::destruct();
-        construct(copy);
+        clear();
+        this->set(copy);
         return *this;
     }
 
@@ -96,6 +101,9 @@ public:
     virtual tree::branches& branches() const {
         get_branches();
         return extends::branches();
+    }
+    virtual bool& got_branches() const {
+        return (bool&)got_branches_;
     }
 
     virtual branch* clone(const node& parent, const node& node) const {
@@ -177,29 +185,26 @@ protected:
         }
         return branches;
     }
-    virtual bool& got_branches() const {
-        return (bool&)got_branches_;
-    }
     
-protected:
+private:
     void construct(const char* path) {
-        extends::construct(path, fs::entry_type_directory);
+        this->set(path, fs::entry_type_directory);
         got_branches_ = (false);
     }
     void construct(const char* path, const fs::directory::entry& entry) {
-        extends::construct(path, entry);
+        this->set(path, entry);
         got_branches_ = (false);
     }
     void construct(const fs::directory::entry& entry) {
-        extends::construct(entry);
+        this->set(entry);
         got_branches_ = (true);
     }
     void construct(const node& node) {
-        extends::construct(node);
+        this->set(node);
         got_branches_ = (true);
     }
     void construct(const branch& copy) {
-        extends::construct(copy);
+        this->set(copy);
         got_branches_ = (true);
     }
     void construct() {

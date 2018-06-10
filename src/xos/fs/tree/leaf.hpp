@@ -81,24 +81,26 @@ public:
         return (leaf*)this;
     }
 
-protected:
+private:
     void construct(const char* path, const char* name, fs::entry_type type) {
-        extends::construct(path, name, type);
+        this->set(path, name, type);
     }
     void construct(const char* path, const fs::directory::entry& entry) {
-        extends::construct(path, entry);
+        this->set(path, entry);
     }
     void construct(const fs::directory::entry& entry) {
-        extends::construct(entry);
+        this->set(entry);
     }
     void construct(const node& node) {
-        extends::construct(node);
+        this->set(node);
     }
     void construct(const leaf& copy) {
-        extends::construct(copy);
+        this->set(copy);
     }
     void destruct() {
     }
+
+protected:
 };
 
 } /// namespace tree

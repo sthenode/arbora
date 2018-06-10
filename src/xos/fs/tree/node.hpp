@@ -198,6 +198,35 @@ public:
         return size;
     }
 
+    using extends::set;
+    virtual node& set(const char* path, const char* name, fs::entry_type type) {
+        this->set_path_name(path, name);
+        this->set_path(path);
+        this->set_name(name);
+        this->set_type(type);
+        return *this;
+    }
+    virtual node& set(const char* path, fs::entry_type type) {
+        this->set_path_name(path);
+        this->set_type(type);
+        return *this;
+    }
+    virtual node& set(const char* path, const fs::directory::entry& entry) {
+        extends::set(entry);
+        this->set_path_name(path);
+        return *this;
+    }
+    virtual node& set(const node& copy) {
+        extends::set(copy);
+        this->set_depth(copy.depth());
+        return *this;
+    }
+    virtual node& clear() {
+        extends::clear();
+        this->set_depth(0);
+        return *this;
+    }
+
 protected:
     template <class derives>
     derives* clone(const node& parent, const node& node) const {
@@ -206,17 +235,16 @@ protected:
             const char_t *path = 0, *name = 0;
             if ((path = parent.has_path_name()) && (name = node.has_name())) {
                 n->set_path(path);
-                n->set_path_name(path);
-                n->append_path_name(name);
+                n->set_path_name(path, name);
             }
         }
         return n;
     }
 
+private:
     void construct(const char* path, const char* name, fs::entry_type type) {
         construct();
-        this->set_path_name(path);
-        this->append_path_name(name);
+        this->set_path_name(path, name);
         this->set_path(path);
         this->set_name(name);
         this->set_type(type);
@@ -231,16 +259,19 @@ protected:
         this->set_path_name(path);
     }
     void construct(const fs::directory::entry& entry) {
-        extends::construct(entry);
+        construct();
+        this->set(entry);
     }
     void construct(const node& copy) {
-        extends::construct(copy);
-        this->set_depth(copy.depth());
+        construct();
+        this->set(copy);
     }
     void construct() {
     }
     void destruct() {
     }
+    
+protected:
 };
 typedef std::tree::nodest<branch, leaf, node, stream> nodes;
 

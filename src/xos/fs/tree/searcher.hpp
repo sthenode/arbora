@@ -29,52 +29,43 @@ namespace xos {
 namespace fs {
 namespace tree {
 
-typedef searcher_events searcher_implementt_implements;
-///////////////////////////////////////////////////////////////////////
-///  Class: searcher_implementt
-///////////////////////////////////////////////////////////////////////
-template <class TImplements = searcher_implementt_implements>
-class _EXPORT_CLASS searcher_implementt: virtual public TImplements {
-public:
-    typedef TImplements implements;
-};
-typedef searcher_implementt<> searcher_implement;
+typedef std::tree::breadth_first_searcht
+ <branch, branches, leaves> breadth_first_search;
 
-typedef searcher_implement searchert_implements;
+typedef std::tree::depth_first_searcht
+ <branch, branches, leaves> depth_first_search;
+
+typedef std::tree::depend_first_searcht
+ <branch, branches, leaves> depend_first_search;
+
+typedef std::tree::bottom_first_searcht
+ <branch, branches, leaves> bottom_first_search;
+
+typedef searcher_events searchert_implements;
 typedef searcher_events_extend searchert_extends;
 ///////////////////////////////////////////////////////////////////////
 ///  Class: searchert
 ///////////////////////////////////////////////////////////////////////
-template <class TImplements = searchert_implements, class TExtends = searchert_extends>
+template 
+<class TSearched = depth_first_search,
+ class TImplements = searchert_implements, class TExtends = searchert_extends>
+
 class _EXPORT_CLASS searchert: virtual public TImplements, public TExtends {
 public:
     typedef TImplements implements;
     typedef TExtends extends;
     typedef searchert derives;
+    typedef TSearched searched;
 
-    searchert(searcher_events* events): extends(events), search_(0) {
+    searchert(searcher_events* events): extends(events) {
     }
-    searchert(const searchert &copy): search_(0) {
+    searchert(const searchert &copy) {
     }
-    searchert(): search_(0) {
+    searchert() {
     }
     virtual ~searchert() {
     }
 
-    virtual ssize_t depth_first_search(branch& b, const char_t* path) {
-        ssize_t count = 0;
-        search_ = &derives::depth_first_search;
-        count = search(b, path);
-        search_ = 0;
-        return count;
-    }
-    virtual ssize_t breadth_first_search(branch& b, const char_t* path) {
-        ssize_t count = 0;
-        search_ = &derives::breadth_first_search;
-        count = search(b, path);
-        search_ = 0;
-        return count;
-    }
     virtual ssize_t search(branch& b, const char_t* path) {
         ssize_t count = 0;
         if ((path) && (path[0])) {
@@ -85,48 +76,39 @@ public:
 
     virtual ssize_t search(branch& b) {
         ssize_t count = 0;
-        if ((search_)) {
-            count = (this->*search_)(b);
-        } else {
-            count = depth_first_search(b);
-        }
-        return count;
-    }
-    virtual ssize_t depth_first_search(branch& b) {
-        ssize_t count = 0;
-        std::tree::findt
-        <branch, std::tree::depth_first_searcht
-         <branch, branches, leaves>, derives> search(*this, b);
-        return count;
-    }
-    virtual ssize_t breadth_first_search(branch& b) {
-        ssize_t count = 0;
-        std::tree::findt
-        <branch, std::tree::breadth_first_searcht
-         <branch, branches, leaves>, derives> search(*this, b);
+        std::tree::findt<branch, searched, derives> search(*this, b);
         return count;
     }
 
     virtual branch* found(branch* b) {
         if ((b)) {
-            this->on_found_branch(*b);
+            if (event_handled_success != (this->on_found_branch(*b))) {
+                return b;
+            }
         }
         for (auto l: b->leaves()) {
-            found(l);
+            if ((found(l))) {
+                return b;
+            }
         }
         return 0;
     }
     virtual leaf* found(leaf* l) {
         if ((l)) {
-            this->on_found_leaf(*l);
+            if (event_handled_success != (this->on_found_leaf(*l))) {
+                return l;
+            }
         }
         return 0;
     }
 
 protected:
-    ssize_t (derives::*search_)(branch& b);
 };
 typedef searchert<> searcher;
+typedef searchert<breadth_first_search> breadth_first_searcher;
+typedef searchert<depth_first_search> depth_first_searcher;
+typedef searchert<depend_first_search> depend_first_searcher;
+typedef searchert<bottom_first_search> bottom_first_searcher;
 
 } /// namespace tree
 } /// namespace fs
